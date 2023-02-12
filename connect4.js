@@ -23,8 +23,8 @@ class Game {
 
 makeBoard() {
   this.board = [];
-  for (let y = 0; y < HEIGHT; y++) {
-    this.board.push(Array.from({ length: this.WIDTH }));
+  for (let y = 0; y < this.height; y++) {
+    this.board.push(Array.from({ length: this.width }));
   }
 }
 
@@ -43,7 +43,7 @@ makeBoard() {
 
   top.addEventListener('click', this.handleGameClick);
 
-  for (let x = 0; x < this.WIDTH; x++) {
+  for (let x = 0; x < this.width; x++) {
     const headCell = document.createElement('td');
     headCell.setAttribute('id', x);
     top.append(headCell);
@@ -52,10 +52,10 @@ makeBoard() {
   board.append(top);
 
   // make main part of board
-  for (let y = 0; y < this.HEIGHT; y++) {
+  for (let y = 0; y < this.height; y++) {
     const row = document.createElement('tr');
 
-    for (let x = 0; x < this.WIDTH; x++) {
+    for (let x = 0; x < this.width; x++) {
       const cell = document.createElement('td');
       cell.setAttribute('id', `${y}-${x}`);
       row.append(cell);
@@ -68,7 +68,7 @@ makeBoard() {
 /** findSpotForCol: given column x, return top empty y (null if filled) */
 
 findSpotForCol(x) {
-  for (let y = this.HEIGHT - 1; y >= 0; y--) {
+  for (let y = this.height - 1; y >= 0; y--) {
     if (!this.board[y][x]) {
       return y;
     }
@@ -111,20 +111,21 @@ handleClick(evt) {
   // place piece in board and add to HTML table
   this.board[y][x] = this.currPlayer;
   this.placeInTable(y, x);
-  
-  // check for win
-  if (this.checkForWin()) {
-    return this.endGame(`The ${this.currPlayer.color} player won!`);
-  }
-  
+
   // check for tie
   if (this.board.every(row => row.every(cell => cell))) {
     return this.endGame('Tie!');
   }
+  
+  // check for win
+  if (this.checkForWin()) {
+    this.gameOver = true;
+    return this.endGame(`The ${this.currPlayer.color} player won!`);
+  }
     
   // switch players
   this.currPlayer = 
-  this.currPlayer === this.players[0] ? this.player[1] : this.players[0];
+  this.currPlayer === this.players[0] ? this.players[1] : this.players[0];
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
@@ -137,14 +138,14 @@ checkForWin() {
     cells.every(
       ([y, x]) =>
         y >= 0 &&
-        y < this.HEIGHT &&
+        y < this.height &&
         x >= 0 &&
-        x < this.WIDTH &&
+        x < this.width &&
         this.board[y][x] === this.currPlayer
     );
 
-  for (let y = 0; y < this.HEIGHT; y++) {
-    for (let x = 0; x < this.WIDTH; x++) {
+  for (let y = 0; y < this.height; y++) {
+    for (let x = 0; x < this.width; x++) {
       // get "check list" of 4 cells (starting here) for each of the different
       // ways to win
       const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
